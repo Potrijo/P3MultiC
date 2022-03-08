@@ -28,12 +28,22 @@ ServerSocket.listen(5) # 5 thread as limit
 
 def threaded_client(connection):
     connection.send(str.encode('Welcome to the Marky Server'))
+    data = connection.recv(2048)
+    print(data.decode('utf-8'))
+    reply = 'Marky says: ' + data.decode('utf-8')
+
+    filename = data.decode('utf-8')
+    f = open(filename, 'rb')
     while True:
-        data = connection.recv(2048)
-        reply = 'Marky says: ' + data.decode('utf-8')
-        if not data:
+        
+        bytes_read = f.read(2048)
+        if not bytes_read:
+            f.close()
+            # file transmitting is done
             break
-        connection.sendall(str.encode(reply))
+        connection.sendall(bytes_read)  
+
+    print('ha sortit del bucle')
     connection.close()
 
 # We want run our Server all the time, which means we don't want to make that our Server get stopped.

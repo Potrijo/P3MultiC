@@ -6,6 +6,7 @@ import socket
 ClientSocket = socket.socket()
 host = '127.0.0.1'
 port = 1233
+status = True
 
 # Setting up a connection using connect() of the socket library which stablishes a connection with the server using the host and port we provided.
 
@@ -18,11 +19,26 @@ except socket.error as e:
 # to ensure the client keeps running as the Server is Running. So for that, we need to use a while loop that.
 # And we also going to provide aninput 
 
-Response = ClientSocket.recv(1024)
+Response = ClientSocket.recv(2024)
+
+Input = input('Entra el nom del artxiu que vols descarregar: ')
+ClientSocket.send(str.encode(Input))
+print('enviat nom del artxiu')
+
+#Response = ClientSocket.recv(2048)
+#print(Response.decode('utf-8'))
+f = open(f'./Rebuts/{Input}', 'wb')
 while True:
-    Input = input('Say Something: ')
-    ClientSocket.send(str.encode(Input))
-    Response = ClientSocket.recv(1024)
-    print(Response.decode('utf-8'))
+# read 1024 bytes from the socket (receive)
+    bytes_read = ClientSocket.recv(2048)
+    f.write(bytes_read)
+    if not bytes_read:    
+        # nothing is received
+        # file transmitting is done
+        f.close()
+        break
+    # write to the file the bytes we just received
+    
+    # update the progress bar
 
 ClientSocket.close()
